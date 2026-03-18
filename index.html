@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PwC – AI-agenter og den nye arbeidshverdagen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgb(253, 81, 8);
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .header .pwc-logo {
+            margin-bottom: 0.8rem;
+        }
+
+        .header .pwc-logo img {
+            height: 40px;
+            filter: brightness(0) invert(1);
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .intro {
+            text-align: center;
+            padding: 1.2rem 0;
+            color: #2d2d2d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgb(253, 81, 8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .person-info h2 {
+            font-size: 1.1rem;
+            color: #2d2d2d;
+            margin-bottom: 0.2rem;
+        }
+
+        .person-info .title {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        .contact-row .icon {
+            width: 20px;
+            text-align: center;
+            color: rgb(253, 81, 8);
+            flex-shrink: 0;
+        }
+
+        .contact-row a {
+            color: #444;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .contact-row a:hover {
+            color: rgb(253, 81, 8);
+        }
+
+        .btn-save {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background: rgb(253, 81, 8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-save:hover {
+            background: rgb(220, 65, 0);
+        }
+
+        .btn-save:active {
+            transform: scale(0.98);
+        }
+
+        .btn-save .btn-icon {
+            margin-right: 0.4rem;
+        }
+
+        .save-all-section {
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-save-all {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: #2d2d2d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-save-all:hover {
+            background: #1a1a1a;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #999;
+            font-size: 0.75rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2d2d2d;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .card-accent {
+            height: 4px;
+            background: linear-gradient(90deg, rgb(253, 81, 8), rgb(255, 170, 114));
+            border-radius: 2px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="pwc-logo">
+            <img src="pwc.png" alt="PwC">
+        </div>
+        <h1>AI-agenter og den nye arbeidshverdagen</h1>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            Hyggelig å treffe deg! Lagre kontaktinformasjonen vår direkte i telefonens kontakter.
+        </div>
+
+        <!-- ====== JOAKIM ====== -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-header">
+                <div class="avatar">JP</div>
+                <div class="person-info">
+                    <h2>Joakim Blix Prestmo</h2>
+                    <div class="title">Direktør, Data og AI<br>PwC Norge</div>
+                </div>
+            </div>
+            <div class="contact-details">
+                <div class="contact-row">
+                    <span class="icon">📧</span>
+                    <a href="mailto:joakim.blix.prestmo@pwc.com">joakim.blix.prestmo@pwc.com</a>
+                </div>
+                <div class="contact-row">
+                    <span class="icon">📱</span>
+                    <a href="tel:+4792268544">+47 922 68 544</a>
+                </div>
+            </div>
+            <button class="btn-save" onclick="downloadVCard('joakim')">
+                <span class="btn-icon">👤</span> Lagre kontakt
+            </button>
+        </div>
+
+        <!-- ====== ANDERS ====== -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-header">
+                <div class="avatar">AL</div>
+                <div class="person-info">
+                    <h2>Anders Lauvsnes</h2>
+                    <div class="title">Direktør, Workforce<br>PwC Norge</div>
+                </div>
+            </div>
+            <div class="contact-details">
+                <div class="contact-row">
+                    <span class="icon">📧</span>
+                    <a href="mailto:anders.lauvsnes@pwc.com">anders.lauvsnes@pwc.com</a>
+                </div>
+                <div class="contact-row">
+                    <span class="icon">📱</span>
+                    <a href="tel:+4799592222">+47 99 59 22 22</a>
+                </div>
+            </div>
+            <button class="btn-save" onclick="downloadVCard('anders')">
+                <span class="btn-icon">👤</span> Lagre kontakt
+            </button>
+        </div>
+
+        <!-- ====== HENRIK ====== -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-header">
+                <div class="avatar">HF</div>
+                <div class="person-info">
+                    <h2>Henrik Fevang</h2>
+                    <div class="title">Associate, Data og AI<br>PwC Norge</div>
+                </div>
+            </div>
+            <div class="contact-details">
+                <div class="contact-row">
+                    <span class="icon">📧</span>
+                    <a href="mailto:henrik.fevang@pwc.com">henrik.fevang@pwc.com</a>
+                </div>
+                <div class="contact-row">
+                    <span class="icon">📱</span>
+                    <a href="tel:+4790285630">+47 902 85 630</a>
+                </div>
+            </div>
+            <button class="btn-save" onclick="downloadVCard('henrik')">
+                <span class="btn-icon">👤</span> Lagre kontakt
+            </button>
+        </div>
+
+        <!-- ====== LAGRE ALLE ====== -->
+        <div class="save-all-section">
+            <button class="btn-save-all" onclick="downloadAllVCards()">
+                📥 Lagre alle tre kontakter
+            </button>
+        </div>
+
+        <div class="footer">
+            © 2025 PwC Norge
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const contacts = {
+            joakim: {
+                firstName: 'Joakim',
+                lastName: 'Blix Prestmo',
+                title: 'Direktør, Data og AI',
+                org: 'PwC Norge',
+                email: 'joakim.blix.prestmo@pwc.com',
+                phone: '+4792268544'
+            },
+            anders: {
+                firstName: 'Anders',
+                lastName: 'Lauvsnes',
+                title: 'Direktør, Workforce',
+                org: 'PwC Norge',
+                email: 'anders.lauvsnes@pwc.com',
+                phone: '+4799592222'
+            },
+            henrik: {
+                firstName: 'Henrik',
+                lastName: 'Fevang',
+                title: 'Associate, Data og AI',
+                org: 'PwC Norge',
+                email: 'henrik.fevang@pwc.com',
+                phone: '+4790285630'
+            }
+        };
+
+        function generateVCard(contact) {
+            return [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                `N:${contact.lastName};${contact.firstName};;;`,
+                `FN:${contact.firstName} ${contact.lastName}`,
+                `ORG:${contact.org}`,
+                `TITLE:${contact.title}`,
+                `EMAIL;TYPE=WORK:${contact.email}`,
+                `TEL;TYPE=WORK,VOICE:${contact.phone}`,
+                'END:VCARD'
+            ].join('\n');
+        }
+
+        function downloadVCard(key) {
+            const contact = contacts[key];
+            const vcard = generateVCard(contact);
+            const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${contact.firstName}_${contact.lastName.replace(' ', '_')}_PwC.vcf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`✅ ${contact.firstName} ${contact.lastName} lastet ned`);
+        }
+
+        function downloadAllVCards() {
+            const allCards = Object.values(contacts)
+                .map(c => generateVCard(c))
+                .join('\n');
+
+            const blob = new Blob([allCards], { type: 'text/vcard;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PwC_AI_Team_Kontakter.vcf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('✅ Alle tre kontakter lastet ned');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+    </script>
+
+</body>
+</html>
